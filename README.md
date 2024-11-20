@@ -9,11 +9,13 @@ The Game of Life API provides a way to interact with Conway's Game of Life by de
 The initial board state is defined by a set of coordinates, each representing a cell that is alive at the start. These coordinates are specified in the form of (x, y) pairs.
 Any cell not explicitly included in the initial set is assumed to be dead.
 
-### 2. The board is assumed to be an infinite two-dimensional plane. 
+### 2. The board is assumed to be an infinite two-dimensional plane
 This means there are no boundaries, and cells outside the given initial coordinates can still become alive based on the rules of the Game of Life.
 
+### 3. Persistance
+Given this is a demo like application I didn't use a database that could scale greatly. Instead I used a Repository pattern to isolate the implementation of the persistance that could be done through different relational and Non relational databases.
 
-### 3. Reaching Conclusion
+### 4. Reaching Conclusion
 A "final state" is reached when the board enters a stable pattern. Stability is defined as a state where the board's configuration remains unchanged between two consecutive iterations (State X-1 equals State X). This could happen due to the board becoming static.
 
 ## Endpoints
