@@ -1,5 +1,20 @@
 # Game of Life API Documentation
-Welcome to the Game of Life API! This API allows users to interact with Conway's Game of Life by uploading board states, retrieving future states, and exploring the board's progression.
+
+The Game of Life API provides a way to interact with Conway's Game of Life by defining board states, progressing through generations, and determining final outcomes. This API provides a set of endpoints that simulate a Game of Life.
+
+## Assumptions of the API
+
+### 1. Initial State Defined by Coordinates
+
+The initial board state is defined by a set of coordinates, each representing a cell that is alive at the start. These coordinates are specified in the form of (x, y) pairs.
+Any cell not explicitly included in the initial set is assumed to be dead.
+
+### 2. The board is assumed to be an infinite two-dimensional plane. 
+This means there are no boundaries, and cells outside the given initial coordinates can still become alive based on the rules of the Game of Life.
+
+
+### 3. Reaching Conclusion
+A "final state" is reached when the board enters a stable pattern. Stability is defined as a state where the board's configuration remains unchanged between two consecutive iterations (State X-1 equals State X). This could happen due to the board becoming static.
 
 ## Endpoints
 ### 1. Upload a New Board State
@@ -112,7 +127,8 @@ Represents a cell's position on the board.
 
 x: The x-coordinate of the cell.
 y: The y-coordinate of the cell.
-Configuration
+
+## Configuration
 The number of default steps for the Final State endpoint is determined by the DefaultStepsConfig in the application settings. If the board cannot reach a final state within this limit, an error will be returned.
 
 
