@@ -79,7 +79,7 @@ namespace GameOfLife.Tests
             _gameRepositoryMock.Setup(repo => repo.DeleteCoordinates(It.IsAny<List<Coordinate>>())).Returns(Task.CompletedTask);
 
             // Act
-            var result = await _gameService.GetNextStageWithSteps(boardId, steps);
+            var result = await _gameService.GetNextStateWithSteps(boardId, steps);
 
             // Assert
             Assert.IsNotNull(result);
@@ -168,6 +168,79 @@ namespace GameOfLife.Tests
             {
                 Assert.IsTrue(result.Any(c => c.X == expectedCoordinate.X && c.Y == expectedCoordinate.Y));
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public async Task TestGetFinalState_ThrowsException()
+        {
+            // Arrange
+            var boardId = 1;
+            var steps = 5;
+            var initialCoordinates = new List<Coordinate>
+            {
+                new Coordinate { X = 2, Y = 2 },
+                new Coordinate { X = 2, Y = 3 },
+                new Coordinate { X = 2, Y = 4 }
+            };
+            var nextCoordinates = new List<Coordinate>
+            {
+                new Coordinate { X = 1, Y = 3 },
+                new Coordinate { X = 2, Y = 3 },
+                new Coordinate { X = 3, Y = 3 }
+            };
+
+            _gameRepositoryMock.SetupSequence(repo => repo.GetState(boardId))
+                .ReturnsAsync(initialCoordinates)
+                .ReturnsAsync(nextCoordinates);
+
+            // Act
+            await _gameService.GetFinalState(boardId, steps);
+
+            // Assert
+            // Expects CoordinateMismatchException to be thrown
+        }
+
+        [TestMethod]
+        public async Task TestGetFinalState_ReachedConclusion()
+        {
+            // Arrange
+            var boardId = 1;
+            var steps = 5;
+            var initialCoordinates = new List<Coordinate>
+            {
+                new Coordinate { X = 2, Y = 2 },
+                new Coordinate { X = 2, Y = 3 },
+                new Coordinate { X = 3, Y = 2 },
+                new Coordinate { X = 3, Y = 3 }
+            };
+            var nextCoordinates = new List<Coordinate>
+            {
+                new Coordinate { X = 2, Y = 2 },
+                new Coordinate { X = 2, Y = 3 },
+                new Coordinate { X = 3, Y = 2 },
+                new Coordinate { X = 3, Y = 3 }
+            };
+
+            _gameRepositoryMock.Setup(repo => repo.GetState(boardId)).ReturnsAsync(initialCoordinates);
+            _gameRepositoryMock.Setup(repo => repo.InsertCoordinates(boardId, It.IsAny<List<Coordinate>>())).Returns(Task.CompletedTask);
+            _gameRepositoryMock.Setup(repo => repo.DeleteCoordinates(It.IsAny<List<Coordinate>>())).Callback<List<Coordinate>>(coords =>
+            {
+                foreach (var coord in coords)
+                {
+                    initialCoordinates.RemoveAll(c => c.X == coord.X && c.Y == coord.Y);
+                }
+            }).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _gameService.GetFinalState(boardId, steps);
+
+            // Assert
+            Assert.AreEqual(nextCoordinates.Count, result.Count);
+            foreach (var expectedCoordinate in nextCoordinates)
+            {
+                Assert.IsTrue(result.Any(c => c.X == expectedCoordinate.X && c.Y == expectedCoordinate.Y));
+            }            
         }
     }
 }

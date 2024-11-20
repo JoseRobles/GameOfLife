@@ -39,14 +39,14 @@ namespace GameOfLife.Controllers
         [HttpGet("State/{boardId}/Steps/{steps}")]
         public async Task<List<Coordinate>> Get(int boardId, int steps)
         {
-            return await _gameService.GetNextStageWithSteps(boardId, steps);
+            return await _gameService.GetNextStateWithSteps(boardId, steps);
         }
 
         [HttpGet("State/{boardId}/Final")]
-        public async Task<List<Coordinate>> GetFinalStage(int boardId)
+        public async Task<List<Coordinate>> GetFinalState(int boardId)
         {
             int steps = _defaultStepsConfig.DefaultSteps;
-            return await _gameService.GetNextStageWithSteps(boardId, steps);
+            return await _gameService.GetFinalState(boardId, steps);
         }
     }
 }

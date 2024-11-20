@@ -71,7 +71,7 @@ namespace GameOfLife.Services
             return currentState;
         }
 
-        public async Task<List<Coordinate>> GetNextStageWithSteps(int boardId, int steps)
+        public async Task<List<Coordinate>> GetNextStateWithSteps(int boardId, int steps)
         {
             var returnedCoordinates = new List<Coordinate>();
             for (int i = 0; i < steps-1; i++)
@@ -79,6 +79,27 @@ namespace GameOfLife.Services
                 await GetNextState(boardId);
             }
             return await GetNextState(boardId);
+        }
+
+        public async Task<List<Coordinate>> GetFinalState(int boardId, int steps)
+        {
+            var previousState = await _gameRepository.GetState(boardId);
+            var currentState = new List<Coordinate>(previousState);
+
+            for (int i = 0; i < steps; i++)
+            {
+                currentState = await GetNextState(boardId);
+
+                // Validate if the board in Step X and Step X-1 have the same coordinates
+                if (!previousState.SequenceEqual(currentState, new CoordinateComparer()))
+                {
+                    throw new Exception("The board in Step X and Step X-1 haven't come to conclusion.");
+                }
+
+                previousState = new List<Coordinate>(currentState);
+            }
+
+            return currentState;
         }
 
         //Method that counts the number of live neighbours for each cell in the board and returns a dictionary with the count of live neighbours for each cell
