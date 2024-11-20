@@ -115,3 +115,10 @@ y: The y-coordinate of the cell.
 Configuration
 The number of default steps for the Final State endpoint is determined by the DefaultStepsConfig in the application settings. If the board cannot reach a final state within this limit, an error will be returned.
 
+
+### Database Note
+
+For this project, UseSqlite was chosen as the database provider to simplify setup and make the API easier to demo. While SQLite is not generally recommended for production-ready applications due to limitations in concurrency and scalability, it is ideal for lightweight and proof-of-concept projects. For a production-ready version, consider using a robust database system such as SQL Server.
+
+
+
