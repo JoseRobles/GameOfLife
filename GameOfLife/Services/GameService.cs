@@ -9,9 +9,16 @@ namespace GameOfLife.Services
     public class GameService: IGameService
     {
         private readonly IGameRepository _gameRepository;
+        private List<(int x, int y)> _adjacentOffsets;
         public GameService(IGameRepository gameRepository)
         {
             _gameRepository = gameRepository;
+            _adjacentOffsets = new List<(int x, int y)>
+               {
+                   (-1, -1), (-1, 0), (-1, 1),
+                   (0, -1), (0, 1), (1, -1),
+                   (1, 0), (1, 1)
+               };
         }
 
         public async Task<int> CreateBoardWithCoordinates(List<Coordinate> coordinates)
@@ -25,7 +32,6 @@ namespace GameOfLife.Services
             var markedForDeletion = new List<Coordinate>();
             var currentState = await _gameRepository.GetState(boardId);
             var (adjacents, checkedCoordinates) = CountAdjacentCells(currentState);
-
 
             foreach (var adjacent in adjacents)
             {
@@ -78,12 +84,6 @@ namespace GameOfLife.Services
         //Method that counts the number of live neighbours for each cell in the board and returns a dictionary with the count of live neighbours for each cell
         private (Dictionary<Coordinate, int> counter, List<Coordinate> checkedCoordinates) CountAdjacentCells(List<Coordinate> coordinates)
         {
-            var adjacentOffsets = new List<(int x, int y)>
-               {
-                   (-1, -1), (-1, 0), (-1, 1),
-                   (0, -1), (0, 1), (1, -1),
-                   (1, 0), (1, 1)
-               };
 
             var coordinateSet = new HashSet<Coordinate>(coordinates);
             var adjacentList = new ConcurrentDictionary<Coordinate, int>();
@@ -99,10 +99,9 @@ namespace GameOfLife.Services
                 MaxDegreeOfParallelism = Environment.ProcessorCount
             };
 
-
             Parallel.ForEach(coordinates, parallelOptions, coordinate =>
             {
-                foreach (var (dx, dy) in adjacentOffsets)
+                foreach (var (dx, dy) in _adjacentOffsets)
                 {
                     var adjacentCoordinate = new Coordinate
                     {
@@ -124,14 +123,7 @@ namespace GameOfLife.Services
 
         //Method that counts the number of live neighbours for each cell in the board and compares it with the original list of coordinates
         private Dictionary<Coordinate, int> CountAdjacentCellsWithOriginalList(List<Coordinate> coordinates, List<Coordinate> currenState)
-        {
-            var adjacentOffsets = new List<(int x, int y)>
-               {
-                   (-1, -1), (-1, 0), (-1, 1),
-                   (0, -1), (0, 1), (1, -1),
-                   (1, 0), (1, 1)
-               };
-            
+        {            
             var adjacentList = new ConcurrentDictionary<Coordinate, int>();
 
             foreach (var coordinate in coordinates)
@@ -144,10 +136,9 @@ namespace GameOfLife.Services
                 MaxDegreeOfParallelism = Environment.ProcessorCount
             };
 
-
             Parallel.ForEach(coordinates, parallelOptions, coordinate =>
             {
-                foreach (var (dx, dy) in adjacentOffsets)
+                foreach (var (dx, dy) in _adjacentOffsets)
                 {
                     var adjacentCoordinate = new Coordinate
                     {
