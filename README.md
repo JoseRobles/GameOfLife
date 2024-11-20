@@ -21,7 +21,7 @@ Given that we can perform a check of the adjacent live cells for each cell indep
 ### 4. Reaching Conclusion
 A "final state" is reached when the board enters a stable pattern. Stability is defined as a state where the board's configuration remains unchanged between two consecutive iterations (State X-1 equals State X). This could happen due to the board becoming static.
 
-### 4. Endpoint Validation
+### 5. Endpoint Validation
 Given that no additional requirements were described for request payloads on endpoints I didn't add a validation there. This is subject to change according to new requirements.
 
 ## Endpoints
