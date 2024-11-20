@@ -15,6 +15,9 @@ This means there are no boundaries, and cells outside the given initial coordina
 ### 3. Persistance
 Given this is a demo like application I didn't use a database that could scale greatly. Instead I used a Repository pattern to isolate the implementation of the persistance that could be done through different relational and Non relational databases.
 
+### 4. Parallelism
+Given that we can perform a check of the adjacent live cells for each cell independently we are using the total amount of available processors to perform a parallel run. In a real scenario we might want to reduce this to a fixed number.
+
 ### 4. Reaching Conclusion
 A "final state" is reached when the board enters a stable pattern. Stability is defined as a state where the board's configuration remains unchanged between two consecutive iterations (State X-1 equals State X). This could happen due to the board becoming static.
 
